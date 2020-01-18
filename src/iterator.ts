@@ -9,7 +9,11 @@ export class PubSubAsyncIterator<T> implements AsyncIterator<T> {
 
 	}
 
-	next(value?: any): Promise<IteratorResult<T>> {
-		return undefined;
+	async next(value?: any): Promise<IteratorResult<T>> {
+		return {
+			done: true,
+			// @ts-ignore
+			value: ''
+		};
 	}
 }

@@ -1,6 +1,7 @@
 import { PubSubEngine } from 'graphql-subscriptions';
-import {Event, EventReceive, Publisher, Subscriber} from "kubets/compiled";
+import {Event, EventReceive, Publisher, PubSubSettings, Subscriber} from "kubets/compiled";
 import {PubSubAsyncIterator} from "./iterator";
+import {TextDecoder} from "util";
 
 export type TriggerTransform = (
 	trigger: string,
@@ -8,9 +9,10 @@ export type TriggerTransform = (
 ) => string;
 
 interface KubeMQPubSubOptions {
-	kubeSubscriber: Subscriber,
-	kubePublisher: Publisher,
 	triggerTransform?: TriggerTransform
+	connectionOptions?: PubSubSettings
+	kubeSubscriber?: Subscriber,
+	kubePublisher?: Publisher,
 }
 
 export class KubeMQPubSub implements PubSubEngine {
@@ -18,22 +20,48 @@ export class KubeMQPubSub implements PubSubEngine {
 	private subscriber: Subscriber;
 	private publisher: Publisher;
 
-	private subscriptionMap: { [subId: number]: [string, Function] } = {};
-	private subsRefsMap: { [trigger: string]: number[] } = {};
+	private subscriptions: { [message: string]: Function } = {};
 	private currentSubscriptionId: number = 0;
 
 	constructor(settings: KubeMQPubSubOptions) {
-		this.subscriber = settings.kubeSubscriber; // TODO: Create Subscriber if not given.
-		this.publisher = settings.kubePublisher; // TODO: Create Publisher if not given.
+		if (!settings.kubePublisher || !settings.kubeSubscriber) {
+			if (settings.connectionOptions) {
+				this.subscriber = new Subscriber(settings.connectionOptions);
+				this.publisher = new Publisher(settings.connectionOptions)
+			} else {
+				throw new Error(`You haven't supplied a valid connectionOptions.`)
+			}
+		} else {
+			this.subscriber = settings.kubeSubscriber;
+			this.publisher = settings.kubePublisher;
+		}
 
 		this.triggerTransform = settings.triggerTransform || ((trigger: string) => trigger);
-		this.subscriber.subscribe(this.onMessage.bind(this), this.onError.bind(this));
+		this.subscriber.subscribe(e => this.onMessage(e), err => this.onError(err));
+
+		console.log('setup');
 	}
 
 	private onMessage(event: EventReceive) {
-		console.log(event.toObject())
+		const message = event.getMetadata();
+		const body = event.getBody();
+		if (!message || !body) return; // Not from PubSub or invalid body.
+
+		const subscriptionCB = this.subscriptions[message];
+		if (!subscriptionCB) return; // Not subscribed to this event.
+
+		let parsedBody;
+		try {
+			parsedBody = typeof body === 'string' ? JSON.parse(body) : JSON.parse(new TextDecoder().decode(body));
+		} catch (e) {
+			parsedBody = body;
+		}
+
+		subscriptionCB(parsedBody)
 	}
-	private onError() {
+
+	private onError(e: Error) {
+		console.log(e)
 		console.error(`pubsub errored`) // TODO:
 	}
 
@@ -49,22 +77,16 @@ export class KubeMQPubSub implements PubSubEngine {
 		await this.publisher.send(event);
 	}
 
-	subscribe(trigger: string, onMessage: Function, options: Object = {}): Promise<number> {
+	async subscribe(trigger: string, onMessage: Function, options: Object = {}): Promise<number> {
 		const triggerName = this.triggerTransform(trigger, options);
 		const id = this.currentSubscriptionId += 1;
-		this.subscriptionMap[id] = [triggerName, onMessage];
+		this.subscriptions[triggerName] = onMessage;
 
-		const refs = this.subsRefsMap[triggerName];
-		if (refs && refs.length > 0) {
-			this.subsRefsMap[triggerName] = [...refs, id];
-			return Promise.resolve(id);
-		} else {
-			return new Promise<number>((resolve, reject) => {
-				resolve();
-			});
-		}
+		return id;
 	}
 
 	unsubscribe(subId: number): any {
+		// const [triggerName, onMessage] = this.subscriptions[subId];
+		// delete this.subscriptions[subId];
 	}
 }
