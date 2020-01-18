@@ -1,0 +1,1 @@
+export { KubeMQPubSub } from './pubsub';

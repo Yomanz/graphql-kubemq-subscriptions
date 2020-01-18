@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "graphql-subscriptions": "^1.1.0",
+    "kubets": "^0.1.6"
+  }
+}
