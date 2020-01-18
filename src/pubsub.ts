@@ -48,8 +48,20 @@ export class KubeMQPubSub implements PubSubEngine {
 		await this.publisher.send(event);
 	}
 
-	async subscribe(triggerName: string, onMessage: Function, options: Object = {}): Promise<number> {
-		return undefined;
+	subscribe(trigger: string, onMessage: Function, options: Object = {}): Promise<number> {
+		const triggerName = this.triggerTransform(trigger, options);
+		const id = this.currentSubscriptionId += 1;
+		this.subscriptionMap[id] = [triggerName, onMessage];
+
+		const refs = this.subsRefsMap[triggerName];
+		if (refs && refs.length > 0) {
+			this.subsRefsMap[triggerName] = [...refs, id];
+			return Promise.resolve(id);
+		} else {
+			return new Promise<number>((resolve, reject) => {
+				resolve();
+			});
+		}
 	}
 
 	unsubscribe(subId: number): any {
