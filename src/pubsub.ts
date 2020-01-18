@@ -1,5 +1,6 @@
 import { PubSubEngine } from 'graphql-subscriptions';
 import {Event, EventReceive, Publisher, Subscriber} from "kubets/compiled";
+import {PubSubAsyncIterator} from "./iterator";
 
 export type TriggerTransform = (
 	trigger: string,
@@ -36,8 +37,8 @@ export class KubeMQPubSub implements PubSubEngine {
 		console.error(`pubsub errored`) // TODO:
 	}
 
-	asyncIterator<T>(triggers: string | string[]): AsyncIterator<T> {
-		return undefined;
+	asyncIterator<T>(triggers: string | string[], options?: Object): AsyncIterator<T> {
+		return new PubSubAsyncIterator<T>(this, triggers, options);
 	}
 
 	async publish<T>(triggerName: string, payload: T): Promise<void> {
