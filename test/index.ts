@@ -22,10 +22,10 @@ const sub = new KubeMQPubSub({
 });
 
 setTimeout(() => {
-	sub.subscribe('messageUpdate', console.log, console.error).then(() => {
-		console.log('subbed')
-		pub.publish('messageUpdate', {
-			gang: 'lmao yeah'
+	sub.subscribe('exampleEvent', console.log, console.error).then(() => {
+		console.log('successfully subscribed.')
+		pub.publish('exampleEvent', {
+			data: 'example'
 		}).then(() => console.log('published'))
 	});
 }, 1000);
