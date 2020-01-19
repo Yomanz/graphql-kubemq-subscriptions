@@ -1,5 +1,5 @@
-import {PubSubEngine} from "graphql-subscriptions";
-import {$$asyncIterator} from "iterall";
+import {PubSubEngine} from 'graphql-subscriptions';
+import {$$asyncIterator} from 'iterall';
 
 export class PubSubAsyncIterator<T> implements AsyncIterator<T> {
 	private subscriptionIds?: Promise<number[]>;
@@ -12,7 +12,7 @@ export class PubSubAsyncIterator<T> implements AsyncIterator<T> {
 		this.eventsArray = typeof eventNames === 'string' ? [eventNames] : eventNames;
 	}
 	public async next(): Promise<IteratorResult<T>> {
-		await this.emptyQueue();
+		await this.subscribeAll();
 		return this.listening ? this.pullValue() : this.return()
 	}
 
@@ -24,6 +24,10 @@ export class PubSubAsyncIterator<T> implements AsyncIterator<T> {
 	public async throw(error: any) {
 		await this.emptyQueue();
 		return Promise.reject(error);
+	}
+
+	[$$asyncIterator]() {
+		return this;
 	}
 
 	private pullValue(): Promise<IteratorResult<any>> {
@@ -40,11 +44,6 @@ export class PubSubAsyncIterator<T> implements AsyncIterator<T> {
 		} else {
 			this.pushQueue.push(event);
 		}
-	}
-
-
-	[$$asyncIterator]() {
-		return this;
 	}
 
 	private async emptyQueue() {
