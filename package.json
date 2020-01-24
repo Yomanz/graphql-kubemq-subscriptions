@@ -2,10 +2,15 @@
   "name": "graphql-kubemq-subscriptions",
   "version": "0.0.4",
   "license": "MIT",
-  "main": "compiled/index.js",
   "repository": "https://github.com/Yomanz/graphql-kubemq-subscriptions",
   "author": "Daave <daave@aaathats3as.com>",
+  "main": "compiled/index.js",
+  "types": "compiled/index.d.ts",
+  "files": [
+    "compiled"
+  ],
   "scripts": {
+    "prepublishOnly": "tsc"
     "build": "tsc"
   },
   "dependencies": {
@@ -13,10 +18,6 @@
     "iterall": "^1.3.0",
     "kubets": "^0.1.6"
   },
-  "files": [
-    "compiled/**/*",
-    "yarn.lock"
-  ],
   "devDependencies": {
     "@types/node": "^13.1.8",
     "nodemon": "^2.0.2",
