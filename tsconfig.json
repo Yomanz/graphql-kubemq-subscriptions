@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2017",
-    "lib": ["es2015", "esnext.asynciterable", "esnext"],
+    "target": "es2016",
+    "lib": ["es2016"],
     "declaration": true,
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
@@ -27,6 +27,7 @@
   ],
   "include": [
     "./node_modules/@types/**/*.d.ts",
-    "./src/**/*.ts"
+    "./src/**/*.ts",
+    "./src/*.ts"
   ]
 }
