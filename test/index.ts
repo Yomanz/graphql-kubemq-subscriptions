@@ -21,11 +21,15 @@ const sub = new KubeMQPubSub({
 	}
 });
 
-setTimeout(() => {
-	sub.subscribe('exampleEvent', console.log, console.error).then(() => {
+setTimeout(async () => {
+	await sub.subscribe('exampleEvent', console.log, console.error).then(() => {
 		console.log('successfully subscribed.')
-		pub.publish('exampleEvent', {
-			data: 'example'
-		}).then(() => console.log('published'))
 	});
+	await sub.subscribe('exampleEvent', console.log, console.error).then(() => {
+		console.log('successfully subbed xx2')
+	})
+
+	await pub.publish('exampleEvent', {
+		data: 'example'
+	}).then(() => console.log('published'))
 }, 1000);

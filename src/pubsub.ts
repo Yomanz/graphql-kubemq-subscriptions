@@ -20,7 +20,7 @@ export class KubeMQPubSub implements PubSubEngine {
 	private subscriber: Subscriber;
 	private publisher: Publisher;
 
-	private subscriptions: { [message: string]: Function } = {};
+	private subscriptions: { [message: string]: Function[] } = {};
 	private currentSubscriptionId: number = 0;
 
 	constructor(settings: KubeMQPubSubOptions) {
@@ -47,8 +47,8 @@ export class KubeMQPubSub implements PubSubEngine {
 		const body = event.getBody();
 		if (!message || !body) return; // Not from PubSub or invalid body.
 
-		const subscriptionCB = this.subscriptions[message];
-		if (!subscriptionCB) return; // Not subscribed to this event.
+		const subscriptionCBs = this.subscriptions[message];
+		if (!subscriptionCBs) return; // No subs for this event.
 
 		let parsedBody;
 		try {
@@ -57,7 +57,7 @@ export class KubeMQPubSub implements PubSubEngine {
 			parsedBody = body;
 		}
 
-		subscriptionCB(parsedBody)
+		for (const cb of subscriptionCBs) cb(parsedBody)
 	}
 
 	private onError(e: Error) {
@@ -80,7 +80,9 @@ export class KubeMQPubSub implements PubSubEngine {
 	async subscribe(trigger: string, onMessage: Function, options: Object = {}): Promise<number> {
 		const triggerName = this.triggerTransform(trigger, options);
 		const id = this.currentSubscriptionId += 1;
-		this.subscriptions[triggerName] = onMessage;
+
+		if (!this.subscriptions[triggerName]) this.subscriptions[triggerName] = [];
+		this.subscriptions[triggerName].push(onMessage);
 
 		return id;
 	}
