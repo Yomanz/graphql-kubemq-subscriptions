@@ -16,9 +16,9 @@ export interface KubeMQPubSubOptions {
 }
 
 export class KubeMQPubSub implements PubSubEngine {
-	private triggerTransform: TriggerTransform;
-	private subscriber: Subscriber;
-	private publisher: Publisher;
+	private readonly triggerTransform: TriggerTransform;
+	private readonly subscriber: Subscriber;
+	private readonly publisher: Publisher;
 
 	private subscriptions: { [message: string]: Function[] } = {};
 	private currentSubscriptionId: number = 0;
@@ -38,8 +38,6 @@ export class KubeMQPubSub implements PubSubEngine {
 
 		this.triggerTransform = settings.triggerTransform || ((trigger: string) => trigger);
 		this.subscriber.subscribe(e => this.onMessage(e), err => this.onError(err));
-
-		console.log('setup');
 	}
 
 	private onMessage(event: EventReceive) {
@@ -61,8 +59,7 @@ export class KubeMQPubSub implements PubSubEngine {
 	}
 
 	private onError(e: Error) {
-		console.log(e)
-		console.error(`pubsub errored`) // TODO:
+		console.error(e);
 	}
 
 	asyncIterator<T>(triggers: string | string[], options?: Object): AsyncIterator<T> {
