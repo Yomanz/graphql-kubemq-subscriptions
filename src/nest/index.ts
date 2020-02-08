@@ -1,2 +1,2 @@
-export * from './KubeMQSubscriptionsService';
-export * from './KubeMQSubscriptionsModule'
+export {KubeMQSubscriptionsService} from './KubeMQSubscriptionsService';
+export {KubeMQSubscriptionsModule} from './KubeMQSubscriptionsModule'

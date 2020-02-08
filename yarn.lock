@@ -788,10 +788,10 @@ iterall@^1.2.1, iterall@^1.3.0:
   resolved "https://registry.yarnpkg.com/iterall/-/iterall-1.3.0.tgz#afcb08492e2915cbd8a0884eb93a8c94d0d72fea"
   integrity sha512-QZ9qOMdF+QLHxy1QIpUHUU1D5pS2CG2P69LF6L6CPjPYA/XMOmKV3PZpawHoAjHNyB0swdVTRxdYT4tbBbxqwg==
 
-kubets@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/kubets/-/kubets-0.1.6.tgz#55c5870c060648a576f8062f401c231f3a3b45cf"
-  integrity sha512-6d6FxrChcH/aKnksmbDZ1jHMG6ufzVqSW3P85/IqW7edaYtvWHnDW79dRF5b2/L1caejLZ7doxtJeMvrdrH0RQ==
+kubets@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/kubets/-/kubets-0.2.1.tgz#869645f4f6c5f6c55acb3b02a456064a17037d50"
+  integrity sha512-vKdJ530PLq6xsOSQXHasVBIdLc1ewbxEZC2owIMAUF3RpyNoppmUdrujXlax9XvCvUA9fblo93CnFo29XCPvew==
   dependencies:
     "@grpc/proto-loader" "^0.5.3"
     dotenv "^8.2.0"
