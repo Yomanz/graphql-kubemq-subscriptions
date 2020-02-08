@@ -8,7 +8,7 @@ export type TriggerTransform = (
 	channelOptions?: Object,
 ) => string;
 
-interface KubeMQPubSubOptions {
+export interface KubeMQPubSubOptions {
 	triggerTransform?: TriggerTransform
 	connectionOptions?: PubSubSettings
 	kubeSubscriber?: Subscriber,
