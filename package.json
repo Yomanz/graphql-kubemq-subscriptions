@@ -1,6 +1,6 @@
 {
   "name": "graphql-kubemq-subscriptions",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "repository": "https://github.com/Yomanz/graphql-kubemq-subscriptions",
   "author": "Daave <daave@aaathats3as.com>",
